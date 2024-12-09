@@ -1,0 +1,100 @@
+<meta charset=UTF-8>
+
+<title>Dimension</title>
+<!-- <link rel=manifest href=manifest.json crossorigin=use-credentials> -->
+
+<!-- Enable Android webapp -->
+<meta name=mobile-web-app-capable content=yes>
+<link rel="shortcut icon" sizes=512x512 href=icon.png>
+
+<!-- Enable iOS webapp -->
+<meta name=apple-mobile-web-app-capable content=yes>
+<link rel="apple-touch-icon" sizes=512x512 href=icon.png>
+
+<!-- <meta name="theme-color" content="#404040" > -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+<!-- Google's web components with Material Design-->
+<script src=material/mwc.min.js></script>
+<script src=material/material-components-web.min.js></script>
+<link href=material/material-components-web.min.css rel=stylesheet>
+
+<link rel=stylesheet href=index.css>
+
+<body style="display: flex; flex-direction: column; margin: auto; padding: 1em; height: 100%; box-sizing: border-box;">
+    <div style="display: flex; flex-direction: row; margin-bottom: 1em;">
+        <mwc-button fullwidth raised id=CONNECT_BUTTON icon=bluetooth style="margin-right:1em">Connect</mwc-button>
+        <mwc-button fullwidth raised id=SETUP_BUTTON icon=bluetooth_searching>Setup Auto</mwc-button>
+    </div>
+    <div style="display: flex; flex-direction: row; margin-bottom: 1em; ">
+        <mwc-textfield outlined id=USER_ID label="User ID" icon=person style="margin-right:1em"></mwc-textfield>
+        <mwc-textfield outlined id=SHIPMENT_ID label="Shipment ID" icon=local_shipping></mwc-textfield>
+    </div>
+    <div class="mdc-data-table" style="flex: 1; margin-bottom: 1em">
+        <div class="mdc-data-table__table-container">
+            <table class="mdc-data-table__table" id=DATA_TABLE>
+                <thead>
+                    <tr class="mdc-data-table__header-row">
+                        <th class="mdc-data-table__header-cell" name=image>
+                            Image
+                        </th>
+                        <th class="mdc-data-table__header-cell" name=stamp>
+                            Timestamp
+                        </th>
+                        <th class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric" name=v>
+                            Vol (m³)
+                        </th>
+                        <th class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric" name=w>
+                            Width
+                        </th>
+                        <th class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric" name=l>
+                            Length
+                        </th>
+                        <th class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric" name=h>
+                            Height
+                        </th>
+                        <th class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric" name=weight>
+                            Weight (kg)
+                        </th>
+                        <th class="mdc-data-table__header-cell" name=shipment>
+                            Shipment ID
+                        </th>
+                        <th class="mdc-data-table__header-cell" name=package>
+                            Package ID
+                        </th>
+                        <th class="mdc-data-table__header-cell" name=remark>
+                            Remark
+                        </th>
+                        <th class="mdc-data-table__header-cell" name=actions>
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="mdc-data-table__content"></tbody>
+            </table>
+        </div>
+    </div>
+    <div style="height: 1.5em">
+        <!-- placeholder to prevent fab from blocking-->
+    </div>
+
+    <mwc-fab id=RELOAD_BUTTON onclick=location.reload()>
+        <mwc-icon slot=icon>refresh</mwc-icon>
+    </mwc-fab>
+
+    <mwc-fab id=SEND_BUTTON>
+        <mwc-icon slot=icon>send</mwc-icon>
+    </mwc-fab>
+
+    <mwc-snackbar>
+        <mwc-icon-button icon=close slot=dismiss></mwc-icon-button>
+    </mwc-snackbar>
+
+    <mwc-dialog>
+        <div></div>
+        <mwc-button unelevated slot=primaryAction></mwc-button>
+        <mwc-button slot=secondaryAction dialogAction=close></mwc-button>
+    </mwc-dialog>
+</body>
+
+<script src=index.js></script>

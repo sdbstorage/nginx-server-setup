@@ -1,0 +1,31 @@
+html {
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-family: monospace;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid black;
+    padding: 0px 2px;
+}
+
+td.numeric {
+    text-align: right;
+}
+
+th {
+    user-select: none;
+    box-sizing: border-box;
+}
+
+th[data-asc=true]::after {
+    content: "▼";
+}
+
+th[data-asc=false]::after {
+    content: "▲";
+}

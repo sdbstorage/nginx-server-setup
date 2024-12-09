@@ -1,0 +1,36 @@
+version: "3"
+
+# 28534 60741 59928
+
+services:
+  nginx:
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      # NOTE: 00_nginx.conf is needed so server block of port 80 overrides included default.conf
+      - ./nginx.conf:/etc/nginx/conf.d/00_nginx.conf:ro
+      # Dump all NGINX conf includes here, follow priority
+      - ./includes:/includes/:ro
+      # Static internal custom error pages
+      - ./error_pages:/error_pages:ro
+      - ./static:/static:ro
+      - ./auth:/auth:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /home/tunnel/heartbeats:/heartbeats:ro
+      # User directory
+      - /home/shahrul/www:/shahrul:ro
+      # GA
+      - /opt/ga/:/opt/ga/
+      - /opt/ga/nginx.conf:/opt/includes/nginx.conf:ro
+    command: sh -c "while true; do 
+      timeout 28d nginx -g 'daemon off;'; 
+      echo restart nginx to reload certs; sleep 1; done"
+
+# docs.docker.com/network/bridge/#differences-between-user-defined-bridges-and-the-default-bridge
+networks: 
+  default: 
+    external: 
+      name: user_bridge

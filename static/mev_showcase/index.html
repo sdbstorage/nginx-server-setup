@@ -1,0 +1,133 @@
+<script src="script.js" type=module></script>
+<title>MEV</title>
+
+<div id=PAGES_CONTAINER class=col>
+  <div class="page col" camera="1 0 1 0 0 0">
+
+    <div>
+      <div style="
+          flex: 1;
+          font-family: Orbitron; 
+          font-size: calc(30vw); 
+          color:white;
+          text-align:center; 
+          font-weight: 800;
+          /* letter-spacing: 0.00em; */
+          line-height: 0.9em; 
+          color: gray; 
+        ">
+        ...
+      </div>
+      <div style="
+          font-family: Orbitron; 
+          font-size: calc(2.75vw); 
+          color:white;
+          text-align:center; 
+          font-weight: 800;
+          text-transform: uppercase;
+          line-height: 1em; 
+        ">
+        ...
+      </div>
+    </div>
+    <div style="flex: 1"></div>
+
+  </div>
+  <div class="page row overlay" camera="-1 0 1 0 0 0">
+    <div style="flex: 2">
+
+    </div>
+    <div style="flex: 1">
+      <h1>Title</h1>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec egestas dapibus est gravida eleifend. Donec
+      dapibus
+      est at pulvinar fringilla. Maecenas arcu velit, egestas eget scelerisque eu, accumsan ac erat. Mauris fermentum
+      eu
+      massa in facilisis. Ut tincidunt diam sit amet pellentesque congue. Morbi eros quam, elementum nec iaculis ac,
+      condimentum id sapien. Cras sollicitudin eleifend sapien eget suscipit. Aliquam in blandit augue.
+    </div>
+  </div>
+  <div class=page camera="1 0 1 0 0 0"></div>
+  <div class=page camera="-1 0 1 0 0 0"></div>
+</div>
+
+
+
+<style>
+  :root {
+    /* --page-padding: 64px; */
+  }
+
+
+  body {
+    position: relative;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    background: black;
+    margin: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  #PAGES_CONTAINER {
+    position: fixed;
+    top: 0;
+    left: 0;
+    align-items: center;
+  }
+
+  @font-face {
+    font-family: Orbitron;
+    src: url(fonts/Orbitron.ttf);
+  }
+
+  @font-face {
+    font-family: Roboto;
+    src: url(fonts/Roboto.ttf);
+  }
+
+  .canvas-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* border: 1px solid #0f0; */
+    box-sizing: border-box;
+  }
+
+  .page {
+    width: 100vw;
+    height: 100vh;
+    border: 1px solid red;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px 32px;
+    box-sizing: border-box;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .justify-center {
+    justify-content: center;
+  }
+
+  .align-center {
+    align-items: center;
+  }
+
+  .overlay {
+    z-index: 1000;
+  }
+
+  ::-webkit-scrollbar {
+    /* width: 0; */
+  }
+</style>

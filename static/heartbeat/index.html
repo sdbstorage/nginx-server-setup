@@ -1,0 +1,85 @@
+<meta charset=UTF-8>
+
+<!-- to suppress Mixed Content warning -->
+<meta http-equiv=Content-Security-Policy content=upgrade-insecure-requests>
+
+<!-- Enable Android webapp -->
+<meta name=mobile-web-app-capable content=yes>
+<link rel="shortcut icon" sizes=512x512 href=icon.png>
+
+<!-- Enable iOS webapp -->
+<meta name=apple-mobile-web-app-capable content=yes>
+<link rel="apple-touch-icon" sizes=512x512 href=icon.png>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, minimal-ui">
+
+
+<title>Heartbeat</title>
+
+<script type=module src=script.js></script>
+
+<div style="display: flex; flex-direction: column; gap: 8px; height: 100%">
+    <div style="display: flex; gap: 8px; justify-content: space-between;">
+        <img src=logo.png style="height: 2em; ">
+        <div style="display: flex; gap: 8px">
+            <div class="button" id=APP_BUTTON>Go to Application</div>
+            <div class="button" id=RECORDER_BUTTON>Go to Recorder</div>
+        </div>
+    </div>
+    <div style="border:2px solid #0002; border-radius: 8px; position: relative; width: 100%; ">
+        <div style="position: absolute; left: 0; top: 0" id=RULER></div>
+        <div style="
+            position: absolute; left: 0; top: 0; 
+            display: flex; flex-direction: column; gap: 4px; 
+            margin: 8px 32px; background: #fff8;
+        " id=LEGEND>
+        </div>
+        <div id=GRAPH_CONTAINER style="overflow-x: scroll; "></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px" id=CONTAINER>
+    </div>
+    <div id=TABLE_CONTAINER style="overflow: auto; flex: 1; min-height: 540px">
+        <table style="border-collapse: collapse">
+            <thead style="position: sticky; top: 0"></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: Roboto, Arial, Helvetica, sans-serif;
+    }
+
+    svg {
+        user-select: none;
+    }
+
+    .button {
+        border: 2px solid #0004;
+        background: #0001;
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        user-select: none;
+    }
+
+    .button:hover {
+        background: #0002;
+        cursor: pointer;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        white-space: nowrap;
+        padding: 2px 4px;
+        text-align: center;
+    }
+
+    th {
+        font-weight: bold;
+        background: #000c;
+        color: white;
+    }
+</style>

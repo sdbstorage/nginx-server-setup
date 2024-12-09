@@ -1,0 +1,76 @@
+:root {
+    --mdc-theme-primary: royalblue;
+    --mdc-theme-secondary: #c00040;
+    --max-width: 960px;
+}
+
+
+body {
+    /* prevent reload */
+    overscroll-behavior: contain;
+    max-width: var(--max-width);
+    margin: auto;
+    position: relative;
+}
+
+
+td img {
+    max-height: 3em;
+}
+
+/* 
+td:hover {
+    background: #0001;
+} */
+
+.mdc-data-table {
+    width: 100%;
+}
+
+mwc-dialog img {
+    width: 100%;
+}
+
+thead {
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+td[name=image],
+th[name=image] {
+    position: sticky;
+    left: 0;
+    background: white;
+}
+
+.mdc-data-table__header-cell {
+    padding: 0 0.5em;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+}
+
+.mdc-data-table__cell {
+    padding: 0 0.5em;
+    border-right: 1px solid #0001;
+}
+
+mwc-textfield {
+    width: 100%;
+}
+
+mwc-fab {
+    position: absolute;
+}
+
+#SEND_BUTTON {
+    bottom: 1em;
+    right: 1em;
+}
+
+#RELOAD_BUTTON {
+    bottom: 1em;
+    right: 5.5em;
+}

@@ -1,0 +1,149 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.min.css>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-quartz.min.css>
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+<body style="
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        height: 100%; 
+        margin: 0; 
+        padding: 8px; 
+        box-sizing: border-box; 
+        gap: 8px; 
+    ">
+    <input type=file id=FILE_INPUT accept="text/plain">
+    <div id=GRID class=ag-theme-quartz style="flex: 1; width :100%"></div>
+</body>
+
+<style>
+    .ag-theme-quartz {
+        --ag-cell-horizontal-padding: 0.5em;
+        --ag-row-height: 1.5em;
+        --ag-header-height: 1.75em;
+    }
+</style>
+
+<script>
+    const DB = {
+        0x18FF5782: { name: "Cumulative power consumption of motor", resolution: 0.1, bits: 24, min: 0, max: 10000000, unit: "kWh" },
+        0x18FF2C13: { name: "Cumulative power consumption of steering motor", resolution: 0.1, bits: 24, min: 0, max: 1000000, unit: "kWh" },
+        0x18FF5F1B: { name: "Cumulative power consumption of air compressor", resolution: 0.1, bits: 24, min: 0, max: 1000000, unit: "kWh" },
+        0x18FFC519: { name: "Cumulative power consumption of electric air conditioner", resolution: 0.1, bits: 24, min: 0, max: 1000000, unit: "kWh" },
+        0x18FF43F3: { name: "Cumulative power consumption of DCDC", resolution: 0.1, bits: 24, min: 0, max: 1000000, unit: "kWh" },
+        0x18FF7AF4: { name: "Battery State of Health (SOH)", resolution: 0.4, bits: 8, min: 0, max: 1000000, unit: "%" },
+        0x18FF32F4: { name: "Battery temperature", resolution: 1, offset: -40, bits: 8, min: -40, max: 100, unit: "C" },
+        0x18FEC117: { name: "Total mileage", resolution: 0.005, bits: 32, min: 0, max: 21055406075, unit: "km" },
+    }
+
+    function extract_value(data_hex, byte_index, num_byte, endian = "little") {
+        data_hex = data_hex.slice(byte_index * 2, (byte_index + num_byte) * 2)
+        if (endian == "little" || endian == "intel")
+            data_hex = data_hex.match(/../g).reverse().join("")
+        return parseInt(data_hex, 16)
+    }
+    function parse_text(text) {
+        const lines = text.split(/\r?\n/)
+        const rows = []
+        let year, month, header
+        lines.forEach((line, index) => {
+            if (line.startsWith("#")) {
+                if (line.includes("Time:")) {
+                    time = line.split(":")[1].trim()
+                    year = time.slice(0, 4)
+                    month = time.slice(4, 6)
+                }
+            }
+            else if (!header)
+                header = line.toLowerCase().split(";")
+            else {
+                const values = line.split(";")
+                const entry = Object.fromEntries(header.map((k, i) => [k, values[i]]))
+                const t = entry.timestamp
+                const day = t.slice(0, 2)
+                const hour = t.slice(3, 5)
+                const minute = t.slice(5, 7)
+                const second = t.slice(7, 9)
+                const ms = t.slice(9, 12)
+                const isoformat = `${year}-${month}-${day}T${hour}:${hour}:${second}.${ms}Z`
+                const date = new Date(isoformat)
+                entry.timestamp = date
+                if (entry.id == undefined)
+                    return
+                const id_value = parseInt(entry.id, 16)
+                if (id_value in DB) {
+                    const meta = DB[id_value]
+                    let value = extract_value(entry.data, 0, meta.bits / 8)
+                    value = value * meta.resolution + (meta.offset || 0)
+                    rows.push({ name: meta.name, unit: meta.unit, value: value, ...entry })
+                }
+                else if (id_value == 0x18ff0824) {
+                    let range = extract_value(entry.data, 1, 1) * 2
+                    let speed = extract_value(entry.data, 2, 1)
+                    let status = extract_value(entry.data, 4, 1)
+                    status = { 0b001: "STOP", 0b010: "READY", 0b011: "GO" }[status]
+                    rows.push({ name: "Driving range", unit: "km", value: range, ...entry })
+                    rows.push({ name: "Vehicle speed", unit: "km/h", value: speed, ...entry })
+                    rows.push({ name: "Vehicle status", value: status, ...entry })
+                }
+                else if (id_value == 0x18ff30f4) {
+                    let voltage = extract_value(entry.data, 0, 2) * 0.1
+                    let current = extract_value(entry.data, 2, 2) * 0.02 - 600
+                    let soc = extract_value(entry.data, 4, 1) * 0.4
+                    rows.push({ name: "Battery voltage", unit: "V", value: voltage, ...entry })
+                    rows.push({ name: "Battery current", unit: "A", value: current, ...entry })
+                    rows.push({ name: "Battery State of Charge (SOC)", unit: "%", value: soc, ...entry })
+                }
+                else if (id_value == 0x18f817d2) {
+                    let forward = extract_value(entry.data, 0, 3, "motorola") * 0.1
+                    let reverse = extract_value(entry.data, 3, 3, "motorola") * 0.1
+                    rows.push({ name: "Battery forward cumulative power consumption", unit: "kWh", value: forward, ...entry })
+                    rows.push({ name: "Energy gained from regenerative braking", unit: "kWh", value: reverse, ...entry })
+                }
+            }
+        })
+        return rows
+    }
+    FILE_INPUT.addEventListener("change", _ => {
+        const reader = new FileReader()
+        reader.addEventListener("load", event => {
+            const rows = parse_text(event.target.result)
+            // rows.forEach(row => console.log(`${row.value} ${row.unit || ""} ${row.name}`))
+            agGrid.createGrid(GRID,
+                {
+                    autoSizeStrategy: {
+                        type: "fitCellContents",
+                    },
+                    rowData: rows,
+                    columnDefs: [
+                        { field: "id", filter: "agTextColumnFilter" },
+                        {
+                            field: "timestamp",
+                            valueFormatter: x => x.value.toLocaleString("en-US", {
+                                // year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                                weekday: "short",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                second: "2-digit",
+                                fractionalSecondDigits: 3,
+                            })
+                        },
+                        {
+                            field: "value",
+                            type: "numericColumn",
+                            valueFormatter: x => typeof x.value == "string" ? x.value : x.value.toFixed(1)
+                        },
+                        { field: "unit", filter: "agTextColumnFilter" },
+                        { field: "name", filter: "agTextColumnFilter" },
+                    ],
+                })
+        })
+
+        reader.addEventListener("error", _ => alert("Read file failed"))
+        reader.readAsText(FILE_INPUT.files[0])
+    })
+</script>
